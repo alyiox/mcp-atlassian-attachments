@@ -54,6 +54,11 @@ class TestResolveOutputPath:
         with pytest.raises((ValueError, OSError)):
             resolve_output_path(str(tmp_path), "/etc/passwd")
 
+    def test_accepts_filename_with_hyphens_and_dots(self, tmp_path):
+        path = resolve_output_path(str(tmp_path), "snipaste-20260421-103126-933.png")
+        assert path.parent == tmp_path
+        assert path.name == "snipaste-20260421-103126-933.png"
+
 
 class TestStreamToFile:
     def _make_response(self, content: bytes, status: int = 200) -> httpx.Response:

@@ -20,7 +20,7 @@ def resolve_output_path(output_dir: str, filename: str) -> Path:
         raise PermissionError(f"Cannot create output directory {base}: permission denied") from exc
 
     target = (base / filename).resolve()
-    if not str(target).startswith(str(base) + "/") and target != base:
+    if target == base or not target.is_relative_to(base):
         raise ValueError(f"Filename '{filename}' would escape the output directory")
     return target
 
