@@ -6,13 +6,13 @@ from typing import Annotated
 from mcp.server.fastmcp import FastMCP
 
 from .config import get_config
-from .jira import download_jira_attachment
+from .jira import download_jira_attachment as _download_jira_attachment
 
 mcp = FastMCP("Atlassian Attachments")
 
 
 @mcp.tool()
-def download_jira_attachment_tool(
+def download_jira_attachment(
     attachment_id: Annotated[str, "Jira attachment ID, for example 439535."],
     output_dir: Annotated[str, "Local directory to save the file. Created automatically if it does not exist."],
     filename: Annotated[str | None, "Optional filename override. Uses Jira metadata filename when omitted."] = None,
@@ -20,7 +20,7 @@ def download_jira_attachment_tool(
 ) -> str:
     """[Atlassian] Download Jira attachment by ID to a local directory."""
     cfg = get_config()
-    result = download_jira_attachment(
+    result = _download_jira_attachment(
         attachment_id=attachment_id,
         output_dir=output_dir,
         filename=filename,
