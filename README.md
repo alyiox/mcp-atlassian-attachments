@@ -2,29 +2,25 @@
 
 <!-- mcp-name: io.github.alyiox/mcp-atlassian-attachments -->
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for downloading Jira Cloud attachments by attachment ID, using Atlassian Cloud granular API token authentication.
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for downloading Jira Cloud attachments by attachment ID to local disk.
 
 > **Supplement to the official Atlassian MCP server.**
 > The [official Atlassian MCP server](https://mcp.atlassian.com/v1/mcp) covers search, issue management, and content operations but does not support downloading attachment files to disk. This server fills that gap.
 
-**Requirements:** Python 3.13+, an Atlassian Cloud account, and a granular API token with the `read:attachment:jira` scope.
+**Requirements:** Python 3.13+, an Atlassian Cloud account, and an API token with at least the `read:jira-work` scope.
 
 ## Authentication
 
-This server uses **granular API tokens** — scoped tokens that limit access to exactly the permissions needed.
+Scoped tokens are recommended to limit access to exactly the permissions needed.
 
-### Create a granular API token
+> **Note:** The granular `read:attachment:jira` scope is not sufficient — Jira's attachment metadata endpoint (`/rest/api/3/attachment/{id}`) requires `read:jira-work` to resolve issue-level permissions. A classic (unscoped) API token also works.
+
+### Create an API token
 
 1. Go to [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-2. Click **Create API token** and choose **"Create API token with scopes"**
-3. Select the scope: `read:attachment:jira`
+2. Click **Create API token**
+3. Choose **"Create API token with scopes"** and select the `read:jira-work` scope, **or** choose **"Classic API token"** for full access
 4. Copy the generated token
-
-### Why granular tokens?
-
-Granular tokens route through `api.atlassian.com` instead of your org's domain, which requires Atlassian to verify your token's scope. This follows the least-privilege principle — the token can only read attachments, nothing else.
-
-The server automatically resolves your Cloud ID from your site URL at startup (via `/_edge/tenant_info`), so you never need to look it up manually.
 
 ## Quick start
 
@@ -70,13 +66,11 @@ export ATLASSIAN_API_TOKEN="your-api-token"
 }
 ```
 
-The server resolves your Atlassian Cloud ID automatically from the site URL — no manual lookup required.
-
 ## Tools
 
 | Tool | Description | Required params |
 |------|-------------|-----------------|
-| **`download_jira_attachment_tool`** | Download a Jira attachment by ID. | `attachment_id`, `output_dir` |
+| **`download_jira_attachment`** | Download a Jira attachment by ID. | `attachment_id`, `output_dir` |
 
 ### Common parameters
 
@@ -99,7 +93,7 @@ The tool returns a JSON object:
   "mimeType": "image/png",
   "size": 496724,
   "path": "/your/output/dir/screenshot.png",
-  "sourceUrl": "https://api.atlassian.com/ex/jira/<cloud-id>/rest/api/3/attachment/content/439535"
+  "sourceUrl": "https://yourorg.atlassian.net/rest/api/3/attachment/content/439535"
 }
 ```
 
