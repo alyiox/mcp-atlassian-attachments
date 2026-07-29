@@ -96,4 +96,12 @@ Normative, high-density metadata: enough for correct tool and parameter selectio
 
 * **The tool/parameter description MUST start with [Atlassian], followed by a Verb-Object fragment**, e.g. `[Atlassian] Download Jira attachment`, `[Atlassian] Download Confluence attachment`.
 * Keep descriptions concise and imperative.
+* **Every tool MUST declare `ToolAnnotations`**, mapped from the operation it performs:
+  * Read → `read_only_hint=True`
+  * Create → `read_only_hint=False`, `destructive_hint=False`, `idempotent_hint=False`
+  * Update → `read_only_hint=False`, `destructive_hint=False`, `idempotent_hint=True`
+  * Delete → `read_only_hint=False`, `destructive_hint=True`
+  * A tool that writes to a caller-named local path is destructive — it can replace or remove a file the caller did not create
+  * Set `open_world_hint=True` when the tool reaches the network, `False` when it only touches local state
+  * Omit `destructive_hint`/`idempotent_hint` on read-only tools — they are meaningful only when `read_only_hint=False`
 

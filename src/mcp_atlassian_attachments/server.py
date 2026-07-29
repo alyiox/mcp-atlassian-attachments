@@ -3,16 +3,28 @@ from __future__ import annotations
 import json
 from typing import Annotated
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
+from mcp.types import ToolAnnotations
 from pydantic import Field
 
 from .config import get_config
 from .jira import download_jira_attachment as _download_jira_attachment
 
-mcp = FastMCP("Atlassian Attachments")
+mcp = MCPServer("Atlassian Attachments")
 
 
-@mcp.tool()
+@mcp.tool(
+    # Writes a file into output_dir, so not read-only. Destructive because the
+    # caller names the path: overwrite=true replaces whatever is already there,
+    # and a size mismatch unlinks the target. Idempotent all the same — repeated
+    # calls with the same arguments converge on the same file.
+    annotations=ToolAnnotations(
+        read_only_hint=False,
+        destructive_hint=True,
+        idempotent_hint=True,
+        open_world_hint=True,
+    ),
+)
 def download_jira_attachment(
     attachment_id: Annotated[
         str,
