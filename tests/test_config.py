@@ -129,13 +129,35 @@ def test_env_overrides_file(monkeypatch, tmp_path):
     assert cfg.api_token == "env-token"
 
 
-def test_missing_site_url_raises(monkeypatch):
-    monkeypatch.delenv("ATLASSIAN_SITE_URL", raising=False)
-    monkeypatch.setenv("ATLASSIAN_EMAIL", "u@e.com")
-    monkeypatch.setenv("ATLASSIAN_API_TOKEN", "t")
+@pytest.mark.parametrize("missing", ["ATLASSIAN_SITE_URL", "ATLASSIAN_EMAIL", "ATLASSIAN_API_TOKEN"])
+def test_missing_credential_raises(monkeypatch, missing):
+    for name, value in (
+        ("ATLASSIAN_SITE_URL", SITE),
+        ("ATLASSIAN_EMAIL", "u@e.com"),
+        ("ATLASSIAN_API_TOKEN", "t"),
+    ):
+        if name == missing:
+            monkeypatch.delenv(name, raising=False)
+        else:
+            monkeypatch.setenv(name, value)
 
-    with pytest.raises(ValueError, match="ATLASSIAN_SITE_URL"):
+    with pytest.raises(ValueError, match=missing):
         load_config()
+
+
+def test_all_missing_credentials_reported_together(monkeypatch):
+    """Every missing field is named in one error, not just the first."""
+    monkeypatch.delenv("ATLASSIAN_SITE_URL", raising=False)
+    monkeypatch.delenv("ATLASSIAN_EMAIL", raising=False)
+    monkeypatch.delenv("ATLASSIAN_API_TOKEN", raising=False)
+
+    with pytest.raises(ValueError) as exc_info:
+        load_config()
+
+    message = str(exc_info.value)
+    assert "ATLASSIAN_SITE_URL is required" in message
+    assert "ATLASSIAN_EMAIL is required" in message
+    assert "ATLASSIAN_API_TOKEN is required" in message
 
 
 def test_http_site_url_raises(monkeypatch):
@@ -144,24 +166,6 @@ def test_http_site_url_raises(monkeypatch):
     monkeypatch.setenv("ATLASSIAN_API_TOKEN", "t")
 
     with pytest.raises(ValueError, match="HTTPS"):
-        load_config()
-
-
-def test_missing_email_raises(monkeypatch):
-    monkeypatch.setenv("ATLASSIAN_SITE_URL", SITE)
-    monkeypatch.delenv("ATLASSIAN_EMAIL", raising=False)
-    monkeypatch.setenv("ATLASSIAN_API_TOKEN", "t")
-
-    with pytest.raises(ValueError, match="ATLASSIAN_EMAIL"):
-        load_config()
-
-
-def test_missing_api_token_raises(monkeypatch):
-    monkeypatch.setenv("ATLASSIAN_SITE_URL", SITE)
-    monkeypatch.setenv("ATLASSIAN_EMAIL", "u@e.com")
-    monkeypatch.delenv("ATLASSIAN_API_TOKEN", raising=False)
-
-    with pytest.raises(ValueError, match="ATLASSIAN_API_TOKEN"):
         load_config()
 
 
