@@ -1,5 +1,10 @@
 # MCP Atlassian Attachments
 
+[![CI](https://github.com/alyiox/mcp-atlassian-attachments/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alyiox/mcp-atlassian-attachments/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/mcp-atlassian-attachments.svg)](https://pypi.org/project/mcp-atlassian-attachments/)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 <!-- mcp-name: io.github.alyiox/mcp-atlassian-attachments -->
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for downloading Jira Cloud attachments by attachment ID to local disk.
