@@ -12,6 +12,17 @@ def sanitize_filename(name: str) -> str:
     return name or "attachment"
 
 
+def resolve_input_path(file_path: str) -> Path:
+    path = Path(file_path).expanduser()
+    try:
+        path = path.resolve(strict=True)
+    except OSError as exc:
+        raise FileNotFoundError(f"File not found: {path}") from exc
+    if not path.is_file():
+        raise ValueError(f"Not a regular file: {path}")
+    return path
+
+
 def resolve_output_path(output_dir: str, filename: str) -> Path:
     base = Path(output_dir).resolve()
     try:

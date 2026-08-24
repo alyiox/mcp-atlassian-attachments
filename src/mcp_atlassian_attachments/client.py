@@ -30,6 +30,8 @@ def check_response(resp: httpx.Response, context: str) -> None:
         raise RuntimeError(f"{context}: access denied (403). Insufficient permissions.")
     if status == 404:
         raise RuntimeError(f"{context}: not found (404).")
+    if status == 413:
+        raise RuntimeError(f"{context}: payload too large (413). The file exceeds the site attachment size limit.")
     if status == 416:
         raise RuntimeError(f"{context}: requested range not satisfiable (416).")
     raise RuntimeError(f"{context}: request failed with status {status}.")
