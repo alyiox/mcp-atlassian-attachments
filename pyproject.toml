@@ -1,7 +1,7 @@
 [project]
 name = "mcp-atlassian-attachments"
 version = "0.3.0"
-description = "MCP server for downloading Jira and Confluence Cloud attachments and uploading Jira attachments"
+description = "MCP server for downloading, uploading, and deleting Jira Cloud attachments by ID"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

@@ -67,6 +67,10 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Let a re-run get past an already-published version and on to the
+          # MCP registry step, instead of failing the whole job here.
+          skip-existing: true
 
       - name: Install mcp-publisher
         run: |
